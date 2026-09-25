@@ -833,14 +833,6 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         <div className={classes.brand} role="heading" aria-level={1} aria-label="Orbit AI">
           <OrbitMark size={24} />
           <span className={classes.brandName}>Orbit</span>
-          {pageContext && (
-            <Tooltip label={pageContext.title} withArrow openDelay={400}>
-              <span className={classes.siteChip}>
-                <Globe size={11} />
-                <span>{pageContext.hostname}</span>
-              </span>
-            </Tooltip>
-          )}
         </div>
 
         <Group gap={2} wrap="nowrap">

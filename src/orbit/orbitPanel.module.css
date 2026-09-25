@@ -3,7 +3,17 @@
   flex-direction: column;
   height: 100vh;
   box-sizing: border-box;
-  background: var(--mantine-color-body);
+  background:
+    radial-gradient(70% 40% at 0% 0%, color-mix(in srgb, #8b5cf6 6%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 100% 0%, color-mix(in srgb, #fbbf24 6%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+:global([data-mantine-color-scheme='dark']) .page {
+  background:
+    radial-gradient(70% 40% at 0% 0%, color-mix(in srgb, #a78bfa 8%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 100% 0%, color-mix(in srgb, #fcd34d 8%, transparent), transparent 70%),
+    var(--mantine-color-body);
 }
 
 .header {
@@ -14,7 +24,7 @@
   height: 52px;
   padding: 0 10px 0 14px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--mantine-color-default-border);
+  border-bottom: 1px solid color-mix(in srgb, var(--mantine-color-default-border) 70%, transparent);
 }
 
 .brand {
@@ -28,31 +38,6 @@
   font-size: 14px;
   font-weight: 650;
   letter-spacing: -0.01em;
-}
-
-.siteChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-width: 0;
-  max-width: 150px;
-  height: 22px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid var(--mantine-color-default-border);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--mantine-color-dimmed);
-}
-
-.siteChip svg {
-  flex-shrink: 0;
-}
-
-.siteChip span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .body {
@@ -184,6 +169,7 @@
 /* The mark on a soft glow, the one decorative touch on the screen. */
 .heroMark {
   position: relative;
+  isolation: isolate;
   margin-bottom: 6px;
 }
 
@@ -193,8 +179,9 @@
   inset: -14px;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--mantine-color-emerald-5) 28%, transparent), transparent 70%);
-  filter: blur(6px);
+  background: conic-gradient(from 90deg, #a78bfa, #fcd34d, #34d399, #a78bfa);
+  filter: blur(18px);
+  opacity: 0.35;
 }
 
 .heroTitle {
@@ -293,8 +280,8 @@
   padding: 9px 14px;
   border-radius: 16px;
   border-bottom-right-radius: 4px;
-  background: color-mix(in srgb, var(--mantine-color-emerald-5) 13%, var(--mantine-color-default));
-  border: 1px solid color-mix(in srgb, var(--mantine-color-emerald-5) 18%, transparent);
+  background: var(--mantine-color-default);
+  border: 1px solid var(--mantine-color-default-border);
 }
 
 .userTurnEdit {
@@ -501,24 +488,101 @@
 }
 
 .composer {
+  --composer-edge: linear-gradient(
+    90deg,
+    #8b5cf6 0%,
+    #a855f7 9%,
+    #f0abfc 16%,
+    #fbbf24 27%,
+    #a3e635 39%,
+    #22c55e 50%,
+    #a855f7 59%,
+    #f0abfc 66%,
+    #fbbf24 77%,
+    #a3e635 89%,
+    #8b5cf6 100%
+  );
+
   position: relative;
   border-radius: 16px;
-  border: 1px solid var(--mantine-color-default-border);
-  background: var(--mantine-color-body);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px -12px rgba(0, 0, 0, 0.18);
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--mantine-color-body), var(--mantine-color-body)) padding-box,
+    var(--composer-edge) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: composer-drift 9s linear infinite;
+
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 220ms ease;
+}
+
+@keyframes composer-drift {
+  from { background-position: 0 0, 0% 50%; }
+  to   { background-position: 0 0, 100% 50%; }
+}
+
+.composer::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--composer-edge);
+
+  background-size: 300% 100%;
+  animation: glow-drift 9s linear infinite;
+  filter: blur(14px);
+  opacity: 0.28;
+  transition: opacity 220ms ease, filter 220ms ease;
+}
+
+@keyframes glow-drift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer,
+  .composer::before {
+    animation: none;
+  }
 }
 
 .composer:focus-within {
-  border-color: color-mix(in srgb, var(--mantine-color-emerald-5) 60%, var(--mantine-color-default-border));
-  box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent),
-    0 8px 24px -12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+}
+
+.composer:focus-within::before {
+  opacity: 0.45;
+  filter: blur(18px);
 }
 
 :global([data-mantine-color-scheme='dark']) .composer {
-  background: color-mix(in srgb, var(--mantine-color-default) 60%, var(--mantine-color-body));
-  box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.7);
+  --composer-edge: linear-gradient(
+    90deg,
+    #a78bfa 0%,
+    #c084fc 9%,
+    #f5b8fb 16%,
+    #fcd34d 27%,
+    #bef264 39%,
+    #34d399 50%,
+    #c084fc 59%,
+    #f5b8fb 66%,
+    #fcd34d 77%,
+    #bef264 89%,
+    #a78bfa 100%
+  );
+
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+:global([data-mantine-color-scheme='dark']) .composer::before {
+  opacity: 0.18;
+}
+
+:global([data-mantine-color-scheme='dark']) .composer:focus-within::before {
+  opacity: 0.32;
 }
 
 .send[data-disabled] {
@@ -579,7 +643,15 @@
 }
 
 .drawerContent {
-  background: var(--mantine-color-body);
+  background:
+    radial-gradient(100% 40% at 100% 0%, color-mix(in srgb, #8b5cf6 6%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+:global([data-mantine-color-scheme='dark']) .drawerContent {
+  background:
+    radial-gradient(100% 40% at 100% 0%, color-mix(in srgb, #a78bfa 8%, transparent), transparent 70%),
+    var(--mantine-color-body);
 }
 
 .drawerHead {
