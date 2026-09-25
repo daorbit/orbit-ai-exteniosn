@@ -4,6 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { CodeHighlightAdapterProvider, createHighlightJsAdapter } from "@mantine/code-highlight";
 import hljs from "highlight.js";
+import "@fontsource-variable/inter";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/code-highlight/styles.css";

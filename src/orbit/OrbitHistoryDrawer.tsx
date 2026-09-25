@@ -4,7 +4,7 @@ import {
   Stack, Text, TextInput, UnstyledButton,
 } from "@mantine/core";
 import {
-  AlertTriangle, Check, CheckSquare, MessageSquare, Pencil, Plus, Search, Trash2, X,
+  AlertTriangle, Check, CheckSquare, Pencil, Search, SquarePen, Trash2, X,
 } from "lucide-react";
 import type { useOrbitChat } from "@/orbit/useOrbitChat";
 import classes from "./orbitPanel.module.css";
@@ -19,6 +19,19 @@ function ago(iso: string): string {
   const days = Math.round(hours / 24);
   if (days < 7) return `${days}d`;
   return new Date(then).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+}
+
+/** Which date bucket a conversation falls in, for the group headings. */
+function bucket(iso: string): string {
+  const d = new Date(iso);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Math.floor((today.getTime() - new Date(d).setHours(0, 0, 0, 0)) / 86400000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return "Previous 7 days";
+  if (days < 30) return "Previous 30 days";
+  return "Older";
 }
 
 export function OrbitHistoryDrawer({
@@ -175,14 +188,14 @@ export function OrbitHistoryDrawer({
         body: { display: "flex", flexDirection: "column", flex: 1, minHeight: 0 },
       }}
     >
-      <Group justify="space-between" wrap="nowrap" px="md" pt="md" pb={10}>
+      <Group justify="space-between" wrap="nowrap" className={classes.drawerHead}>
         <Text size="sm" fw={650}>
           Conversations
         </Text>
         <Group gap={6} wrap="nowrap">
           {loadingConversation && <Loader size={11} type="dots" />}
-          <ActionIcon variant="subtle" color="gray" size="sm" onClick={close} aria-label="Close history">
-            <X size={15} />
+          <ActionIcon variant="subtle" color="gray" size={30} onClick={close} aria-label="Close history">
+            <X size={16} />
           </ActionIcon>
         </Group>
       </Group>
@@ -217,20 +230,21 @@ export function OrbitHistoryDrawer({
         ) : (
           <Group gap={6} wrap="nowrap">
             <Button
-              variant="default"
               size="xs"
               radius="md"
-              leftSection={<Plus size={14} />}
+              h={32}
+              leftSection={<SquarePen size={14} />}
               onClick={startNew}
               disabled={!started}
               style={{ flex: 1, minWidth: 0 }}
             >
-              New conversation
+              New chat
             </Button>
             <Button
               variant="default"
               size="xs"
               radius="md"
+              h={32}
               leftSection={<CheckSquare size={14} />}
               onClick={() => setSelectMode(true)}
               disabled={!conversations.length}
@@ -242,11 +256,12 @@ export function OrbitHistoryDrawer({
         )}
       </Box>
 
-      {conversations.length > 6 && (
+      {conversations.length > 0 && (
         <Box px="md" pb="sm">
           <TextInput
             size="xs"
             radius="md"
+            classNames={{ input: classes.drawerSearch }}
             placeholder="Search conversations"
             value={query}
             onChange={(e) => setQuery(e.currentTarget.value)}
@@ -291,11 +306,18 @@ export function OrbitHistoryDrawer({
           </Text>
         ) : (
           <Stack gap={0}>
-            {shown.map((c) => {
+            {shown.map((c, i) => {
               const active = c.id === conversationId;
+              const group = bucket(c.lastMessageAt);
+              const heading =
+                i === 0 || bucket(shown[i - 1].lastMessageAt) !== group ? (
+                  <div key={`h-${group}`} className={classes.threadGroup}>
+                    {group}
+                  </div>
+                ) : null;
 
               if (editing === c.id) {
-                return (
+                return [heading, (
                   <Box key={c.id} px={4} py={4} mb={4}>
                     <TextInput
                       size="xs"
@@ -334,13 +356,13 @@ export function OrbitHistoryDrawer({
                       }
                     />
                   </Box>
-                );
+                )];
               }
 
               const deleting = deletingId === c.id;
               const isSelected = selected.has(c.id);
 
-              return (
+              return [heading, (
                 <UnstyledButton
                   key={c.id}
                   className={classes.thread}
@@ -357,17 +379,15 @@ export function OrbitHistoryDrawer({
                       style={{ marginTop: 6, flexShrink: 0 }}
                       aria-label={`Select ${c.title}`}
                     />
-                  ) : (
-                    <div className={classes.threadIcon}>
-                      {deleting ? <Loader size={13} color="red" /> : <MessageSquare size={14} />}
-                    </div>
-                  )}
+                  ) : deleting ? (
+                    <Loader size={13} color="red" style={{ marginTop: 3, flexShrink: 0 }} />
+                  ) : null}
 
                   <div className={classes.threadBody}>
-                    <Text size="xs" fw={active ? 600 : 500} lh={1.4} truncate>
+                    <Text size="13px" fw={active ? 600 : 500} lh={1.4} truncate>
                       {c.title}
                     </Text>
-                    <Text size="10px" c="dimmed" lh={1.4}>
+                    <Text size="11px" c="dimmed" lh={1.4}>
                       {ago(c.lastMessageAt)} · {Math.floor(c.messageCount / 2)} question
                       {c.messageCount === 2 ? "" : "s"}
                     </Text>
@@ -409,7 +429,7 @@ export function OrbitHistoryDrawer({
                     </div>
                   )}
                 </UnstyledButton>
-              );
+              )];
             })}
 
             {hasMoreConversations && (

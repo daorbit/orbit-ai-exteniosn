@@ -3,10 +3,10 @@ import { createTheme, rem, ThemeIcon } from "@mantine/core";
 export const theme = createTheme({
   primaryColor: "emerald",
   primaryShade: { light: 6, dark: 7 },
-  fontFamily: "Inter, system-ui, -apple-system, sans-serif",
+  fontFamily: "'Inter Variable', Inter, system-ui, -apple-system, sans-serif",
   fontFamilyMonospace: "ui-monospace, 'SF Mono', Menlo, monospace",
   headings: {
-    fontFamily: "Inter, system-ui, sans-serif",
+    fontFamily: "'Inter Variable', Inter, system-ui, sans-serif",
     fontWeight: "700",
     sizes: {
       h1: { fontSize: rem(30), lineHeight: "1.2" },

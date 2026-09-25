@@ -3,8 +3,9 @@ import {
   ActionIcon, Box, Group, Loader, Menu, ScrollArea, Stack, Text, Textarea, Title, Tooltip, UnstyledButton,
 } from "@mantine/core";
 import {
-  AlertTriangle, ArrowUp, Check, ChevronDown, Copy, Download, FileText, Globe, History, Lock, Palette,
-  Pencil, Paperclip, RefreshCw, RotateCcw, Settings, Share2, Square, X,
+  AlertTriangle, ArrowUp, ArrowUpRight, Check, ChevronDown, Copy, CornerDownRight, Download, FileText,
+  Globe, History, Lock, MessageSquareText, Palette, Pencil, Paperclip, RefreshCw, Settings, Share2,
+  Square, SquarePen, X,
 } from "lucide-react";
 import { OrbitMark } from "@/orbit/components/OrbitMark";
 import { RichText, toPlainText } from "@/orbit/components/RichText";
@@ -29,6 +30,14 @@ const MAX_IMAGE_BYTES = 6 * 1024 * 1024;
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
 
 const DRAW_RE = /^(draw|generate|gen|create|illustrate|paint|sketch|render|make me (an? )?(image|picture|photo))\b/i;
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 5) return "Working late?";
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 async function copyText(text: string) {
   try {
@@ -430,7 +439,7 @@ function Turn({
 
   if (message.stopped) {
     return (
-      <Group gap={10} wrap="nowrap" align="center" pl={34}>
+      <Group gap={10} wrap="nowrap" align="center">
         <Text size="xs" c="dimmed">
           Stopped
         </Text>
@@ -449,15 +458,17 @@ function Turn({
   }
 
   return (
-    <Group gap={12} wrap="nowrap" align="flex-start">
-      <Box style={{ flexShrink: 0, marginTop: 1 }}>
+    <div className={classes.answer}>
+      <div className={classes.answerHead}>
         {message.failed ? (
-          <AlertTriangle size={17} color="var(--mantine-color-orange-5)" />
+          <AlertTriangle size={16} color="var(--mantine-color-orange-5)" />
         ) : (
-          <OrbitMark size={22} />
+          <OrbitMark size={20} />
         )}
-      </Box>
-      <div style={{ minWidth: 0, flex: 1 }}>
+        <span className={classes.answerName}>Orbit</span>
+        {message.modelLabel && <span className={classes.answerModel}>{message.modelLabel}</span>}
+      </div>
+      <div className={classes.answerBody}>
         {message.imageUrl && <GeneratedImage url={message.imageUrl} />}
         {message.content && (
           <AnswerText message={message} live={Boolean(live)} onDone={onRevealed} />
@@ -472,7 +483,19 @@ function Turn({
           />
         )}
       </div>
-    </Group>
+    </div>
+  );
+}
+
+/** A soft sweep across the word, while Orbit works on an answer. */
+function ThinkingRow({ label }: { label: string }) {
+  return (
+    <div className={classes.answer}>
+      <div className={classes.answerHead}>
+        <OrbitMark size={20} className={classes.markPulse} />
+        <span className={classes.thinking}>{label}</span>
+      </div>
+    </div>
   );
 }
 
@@ -783,9 +806,10 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           <Group gap={4} wrap="nowrap">
             <Tooltip label={thinking ? "Stop" : "Send"} withArrow>
               <ActionIcon
+                className={classes.send}
                 color={thinking ? "red" : "emerald"}
                 radius="xl"
-                size="md"
+                size={32}
                 disabled={!thinking && empty}
                 onClick={() => (thinking ? stop() : sendAndStop())}
                 aria-label={thinking ? "Stop" : "Send"}
@@ -797,7 +821,7 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         </div>
       </div>
 
-      <Text size="10px" c="dimmed" ta="center" mt={8} lh={1.4}>
+      <Text size="10px" c="dimmed" ta="center" mt={8} lh={1.4} className={classes.disclaimer}>
         Orbit can't see your data and can be wrong.
       </Text>
     </div>
@@ -806,21 +830,30 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   return (
     <div className={classes.page}>
       <div className={classes.header}>
-        <span role="heading" aria-level={1} aria-label="Orbit AI" style={{ display: "inline-flex" }}>
-          <OrbitMark size={26} />
-        </span>
+        <div className={classes.brand} role="heading" aria-level={1} aria-label="Orbit AI">
+          <OrbitMark size={24} />
+          <span className={classes.brandName}>Orbit</span>
+          {pageContext && (
+            <Tooltip label={pageContext.title} withArrow openDelay={400}>
+              <span className={classes.siteChip}>
+                <Globe size={11} />
+                <span>{pageContext.hostname}</span>
+              </span>
+            </Tooltip>
+          )}
+        </div>
 
         <Group gap={2} wrap="nowrap">
           {started && (
-            <Tooltip label="Start over" withArrow>
+            <Tooltip label="New chat" withArrow>
               <ActionIcon
                 variant="subtle"
                 color="gray"
-                size="md"
+                size={30}
                 onClick={chat.reset}
-                aria-label="Start over"
+                aria-label="New chat"
               >
-                <RotateCcw size={15} />
+                <SquarePen size={15} />
               </ActionIcon>
             </Tooltip>
           )}
@@ -828,22 +861,22 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <ActionIcon
               variant="subtle"
               color="gray"
-              size="md"
+              size={30}
               onClick={() => setHistoryOpen(true)}
               aria-label="Conversations"
             >
-              <History size={16} />
+              <History size={15} />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Settings" withArrow>
             <ActionIcon
               variant="subtle"
               color="gray"
-              size="md"
+              size={30}
               onClick={onOpenSettings}
               aria-label="Settings"
             >
-              <Settings size={16} />
+              <Settings size={15} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -853,33 +886,32 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
         {!started ? (
           <div className={classes.hero}>
             <div className={classes.heroHead}>
-              <Title order={2} fw={500} className={classes.heroTitle}>
-                How can Orbit help today?
+              <div className={classes.heroMark}>
+                <OrbitMark size={44} />
+              </div>
+              <Title order={2} className={classes.heroTitle}>
+                {greeting()}
               </Title>
+              <Text className={classes.heroSub}>
+                {pageContext
+                  ? <>Ask anything, or about <b>{pageContext.hostname}</b>. Attach a file or draw a picture.</>
+                  : "Ask anything, attach a file, or draw a picture."}
+              </Text>
             </div>
-            {pageContext && (
-              <UnstyledButton
-                className={classes.pageContextChip}
-                onClick={() => setInput(`What does Orbit know about ${pageContext.hostname}?`)}
-              >
-                <Globe size={12} />
-                <Text size="xs" lh={1.3} truncate>
-                  About {pageContext.hostname}
-                </Text>
-              </UnstyledButton>
-            )}
+
             {composer}
 
             <div className={classes.starters} data-ready>
+              <div className={classes.startersLabel}>Try asking</div>
               {staticStarters.map((q) => (
                 <UnstyledButton
                   key={q}
                   className={classes.starter}
                   onClick={() => sendAndStop(q)}
                 >
-                  <Text size="xs" lh={1.4}>
-                    {q}
-                  </Text>
+                  <MessageSquareText size={14} className={classes.starterIcon} />
+                  <span className={classes.starterText}>{q}</span>
+                  <ArrowUpRight size={14} className={classes.starterArrow} />
                 </UnstyledButton>
               ))}
             </div>
@@ -897,7 +929,7 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
               }}
             >
               <div className={classes.column}>
-                <Stack gap={26}>
+                <Stack gap={28}>
                   {loadingOlderMessages && (
                     <Group justify="center" py={4}>
                       <Loader size={13} type="dots" color="var(--mantine-color-emerald-5)" />
@@ -918,41 +950,31 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                   ))}
 
                   {thinking && generatingImage && (
-                    <Group gap={12} wrap="nowrap" align="flex-start">
-                      <OrbitMark size={22} />
+                    <div className={classes.answer}>
+                      <div className={classes.answerHead}>
+                        <OrbitMark size={20} className={classes.markPulse} />
+                        <span className={classes.thinking}>Painting</span>
+                      </div>
                       <div className={classes.generatingImage}>
                         <div className={classes.generatingImageSweep} />
                         <Palette size={20} className={classes.generatingImageIcon} />
-                        <Text size="xs" fw={500} className={classes.generatingImageLabel}>
-                          Painting
-                        </Text>
                       </div>
-                    </Group>
+                    </div>
                   )}
 
-                  {thinking && !generatingImage && (
-                    <Group gap={12} wrap="nowrap">
-                      <OrbitMark size={22} />
-                      <Group gap={7} wrap="nowrap">
-                        <Loader size={13} type="dots" color="var(--mantine-color-emerald-5)" />
-                        <Text size="xs" c="emerald.4" fw={500}>
-                          Thinking
-                        </Text>
-                      </Group>
-                    </Group>
-                  )}
+                  {thinking && !generatingImage && <ThinkingRow label="Thinking" />}
 
                   {!thinking && followUps.length > 0 && (
                     <div className={classes.followUps}>
+                      <div className={classes.followUpsLabel}>Related</div>
                       {followUps.map((q) => (
                         <UnstyledButton
                           key={q}
-                          className={classes.starter}
+                          className={classes.followUp}
                           onClick={() => sendAndStop(q)}
                         >
-                          <Text size="xs" lh={1.4}>
-                            {q}
-                          </Text>
+                          <CornerDownRight size={13} className={classes.starterIcon} />
+                          <span className={classes.starterText}>{q}</span>
                         </UnstyledButton>
                       ))}
                     </div>
