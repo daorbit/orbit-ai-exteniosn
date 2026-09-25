@@ -1,0 +1,20 @@
+:root {
+  --surface-2: #f1f5f4;
+  --border: #d8e0de;
+  --text: #0b0e14;
+  --accent-contrast: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mantine-color-scheme="light"]) {
+    --surface-2: #1a1c22;
+    --border: #2b2f38;
+    --text: #e6e6e6;
+  }
+}
+
+:root[data-mantine-color-scheme="dark"] {
+  --surface-2: #1a1c22;
+  --border: #2b2f38;
+  --text: #e6e6e6;
+}

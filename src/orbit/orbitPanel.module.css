@@ -1,0 +1,656 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  background:
+    radial-gradient(70% 40% at 0% 0%, color-mix(in srgb, #8b5cf6 6%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 100% 0%, color-mix(in srgb, #fbbf24 6%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+:global([data-mantine-color-scheme='dark']) .page {
+  background:
+    radial-gradient(70% 40% at 0% 0%, color-mix(in srgb, #a78bfa 8%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 100% 0%, color-mix(in srgb, #fcd34d 8%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px 8px;
+  flex-shrink: 0;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.body[data-state='empty'] {
+  justify-content: center;
+  padding-bottom: 24px;
+}
+
+.starters {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  margin: 0 auto;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.starters[data-ready] {
+  opacity: 1;
+}
+
+.followUps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-left: 34px;
+}
+
+.starter {
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--mantine-color-dimmed);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.starters .starter {
+  text-align: left;
+}
+
+.starter:hover {
+  background: var(--mantine-color-default-hover);
+  color: var(--mantine-color-text);
+}
+
+.followUps .starter {
+  border-radius: 999px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: color-mix(in srgb, var(--mantine-color-default) 45%, transparent);
+  color: var(--mantine-color-text);
+}
+
+.followUps .starter:hover {
+  border-color: color-mix(in srgb, var(--mantine-color-emerald-5) 50%, transparent);
+  background: color-mix(in srgb, var(--mantine-color-emerald-5) 8%, transparent);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 0 14px;
+}
+
+.heroHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.pageContextChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: color-mix(in srgb, var(--mantine-color-default) 45%, transparent);
+  color: var(--mantine-color-dimmed);
+  margin-top: -8px;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.pageContextChip:hover {
+  border-color: color-mix(in srgb, var(--mantine-color-emerald-5) 50%, transparent);
+  color: var(--mantine-color-text);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.column {
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 14px 8px;
+}
+
+.userTurn {
+  max-width: 92%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  border-bottom-right-radius: 5px;
+  background: var(--mantine-color-default);
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.userTurnEdit {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.userTurnRow:hover .userTurnEdit,
+.userTurnEdit:focus-visible {
+  opacity: 1;
+}
+
+.userTurnEditing {
+  width: 100%;
+  max-width: 92%;
+  padding: 6px 12px 8px;
+  border-radius: 16px;
+  background: var(--mantine-color-default);
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.editCancel,
+.editSave {
+  padding: 4px 12px;
+  border-radius: 999px;
+  transition: background-color 120ms ease, opacity 120ms ease;
+}
+
+.editCancel {
+  color: var(--mantine-color-dimmed);
+}
+
+.editCancel:hover {
+  background: var(--mantine-color-default-hover);
+}
+
+.editSave {
+  background: var(--mantine-color-emerald-6);
+  color: #fff;
+}
+
+.editSave:hover {
+  background: var(--mantine-color-emerald-7);
+}
+
+.editSave:disabled {
+  opacity: 0.5;
+}
+
+.userTurnImageStandalone {
+  display: block;
+  max-width: min(78%, 260px);
+  max-height: 180px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.generatedImage {
+  display: block;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.generatedImage[data-loaded='true'] {
+  opacity: 1;
+}
+
+.generatedImageWrap {
+  position: relative;
+  display: grid;
+  max-width: 100%;
+}
+
+.generatedImageWrap > * {
+  grid-area: 1 / 1;
+}
+
+.generatedImageDownload {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: color-mix(in srgb, var(--mantine-color-body) 75%, transparent);
+}
+
+.generatedImageSkeleton {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: linear-gradient(
+    100deg,
+    var(--mantine-color-default) 40%,
+    var(--mantine-color-default-hover) 50%,
+    var(--mantine-color-default) 60%
+  );
+  background-size: 200% 100%;
+  animation: orbitImageShimmer 1.4s ease-in-out infinite;
+}
+
+.generatingImage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: color-mix(in srgb, var(--mantine-color-default) 70%, var(--mantine-color-body));
+  overflow: hidden;
+}
+
+.generatingImageSweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent) 48%,
+    color-mix(in srgb, var(--mantine-color-emerald-5) 28%, transparent) 50%,
+    color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent) 52%,
+    transparent 70%
+  );
+  background-size: 250% 100%;
+  animation: orbitPaintSweep 2s ease-in-out infinite;
+}
+
+.generatingImageIcon {
+  position: relative;
+  color: var(--mantine-color-emerald-5);
+  animation: orbitPaintPulse 1.6s ease-in-out infinite;
+}
+
+.generatingImageLabel {
+  position: relative;
+  color: var(--mantine-color-emerald-5);
+}
+
+@keyframes orbitPaintSweep {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
+@keyframes orbitPaintPulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes orbitImageShimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.imageChip {
+  position: relative;
+  display: inline-flex;
+  margin: 10px 0 0 14px;
+}
+
+.imageChip img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.imageChip button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--mantine-color-body);
+  border: 1px solid var(--mantine-color-default-border);
+}
+
+.composerWrap {
+  width: 100%;
+  margin: 0 auto;
+  padding: 4px 14px 14px;
+}
+
+.hero .composerWrap {
+  padding: 0;
+}
+
+.composer {
+  --composer-edge: linear-gradient(
+    90deg,
+    #8b5cf6 0%,
+    #a855f7 9%,
+    #f0abfc 16%,
+    #fbbf24 27%,
+    #a3e635 39%,
+    #22c55e 50%,
+    #a855f7 59%,
+    #f0abfc 66%,
+    #fbbf24 77%,
+    #a3e635 89%,
+    #8b5cf6 100%
+  );
+
+  position: relative;
+  border-radius: 16px;
+
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--mantine-color-body), var(--mantine-color-body)) padding-box,
+    var(--composer-edge) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: composer-drift 9s linear infinite;
+
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 220ms ease;
+}
+
+@keyframes composer-drift {
+  from { background-position: 0 0, 0% 50%; }
+  to   { background-position: 0 0, 100% 50%; }
+}
+
+.composer::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--composer-edge);
+
+  background-size: 300% 100%;
+  animation: glow-drift 9s linear infinite;
+  filter: blur(14px);
+  opacity: 0.28;
+  transition: opacity 220ms ease, filter 220ms ease;
+}
+
+@keyframes glow-drift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer,
+  .composer::before {
+    animation: none;
+  }
+}
+
+.composer:focus-within {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+}
+
+.composer:focus-within::before {
+  opacity: 0.45;
+  filter: blur(18px);
+}
+
+:global([data-mantine-color-scheme='dark']) .composer {
+  --composer-edge: linear-gradient(
+    90deg,
+    #a78bfa 0%,
+    #c084fc 9%,
+    #f5b8fb 16%,
+    #fcd34d 27%,
+    #bef264 39%,
+    #34d399 50%,
+    #c084fc 59%,
+    #f5b8fb 66%,
+    #fcd34d 77%,
+    #bef264 89%,
+    #a78bfa 100%
+  );
+
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+:global([data-mantine-color-scheme='dark']) .composer::before {
+  opacity: 0.18;
+}
+
+:global([data-mantine-color-scheme='dark']) .composer:focus-within::before {
+  opacity: 0.32;
+}
+
+.composer textarea {
+  background: transparent;
+}
+
+.composerInput {
+  scrollbar-width: none;
+}
+
+.composerInput::-webkit-scrollbar {
+  display: none;
+}
+
+.composerInputWrapper {
+  margin: 0;
+}
+
+.composerFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 6px 6px;
+}
+
+.modelPicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: var(--mantine-color-dimmed);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.modelPicker:hover {
+  background: var(--mantine-color-default-hover);
+  color: var(--mantine-color-text);
+}
+
+.modelPicker:disabled {
+  opacity: 0.5;
+}
+
+.drawerContent {
+  background:
+    radial-gradient(100% 40% at 100% 0%, color-mix(in srgb, #8b5cf6 6%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+:global([data-mantine-color-scheme='dark']) .drawerContent {
+  background:
+    radial-gradient(100% 40% at 100% 0%, color-mix(in srgb, #a78bfa 8%, transparent), transparent 70%),
+    var(--mantine-color-body);
+}
+
+.drawerList {
+  flex: 1;
+  min-height: 0;
+  padding: 0 10px 12px;
+}
+
+.thread {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+  border: 1px solid transparent;
+  color: var(--mantine-color-text);
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.thread:hover {
+  background: var(--mantine-color-default-hover);
+  border-color: var(--mantine-color-default-border);
+}
+
+.thread[data-active='true'] {
+  background: color-mix(in srgb, var(--mantine-color-emerald-5) 12%, transparent);
+  border-color: color-mix(in srgb, var(--mantine-color-emerald-5) 28%, transparent);
+}
+
+.threadIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 8px;
+  background: var(--mantine-color-default);
+  color: var(--mantine-color-dimmed);
+}
+
+.thread[data-active='true'] .threadIcon {
+  background: color-mix(in srgb, var(--mantine-color-emerald-5) 20%, transparent);
+  color: var(--mantine-color-emerald-6);
+}
+
+.threadBody {
+  flex: 1;
+  min-width: 0;
+  padding-right: 46px;
+}
+
+.threadActions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.thread:hover .threadActions,
+.thread:focus-within .threadActions {
+  opacity: 1;
+}
+
+.threadActionBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: var(--mantine-color-dimmed);
+  transition: background-color 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.threadActionBtn:hover {
+  transform: translateY(-1px);
+}
+
+.threadActionBtn[data-tone='edit']:hover {
+  background: color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent);
+  color: var(--mantine-color-emerald-6);
+}
+
+.threadActionBtn[data-tone='delete']:hover {
+  background: color-mix(in srgb, var(--mantine-color-red-5) 14%, transparent);
+  color: var(--mantine-color-red-6);
+}
+
+.thread[data-deleting='true'] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.threadSkeleton {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  margin-bottom: 4px;
+}
+
+.threadSkeletonIcon {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-top: 1px;
+  border-radius: 8px;
+}
+
+.threadSkeletonLines {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 3px;
+}
+
+.threadSkeletonIcon,
+.threadSkeletonLine {
+  background: linear-gradient(
+    100deg,
+    var(--mantine-color-default) 40%,
+    var(--mantine-color-default-hover) 50%,
+    var(--mantine-color-default) 60%
+  );
+  background-size: 200% 100%;
+  animation: orbitImageShimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.threadSkeletonLine {
+  height: 10px;
+}
+
+.threadSkeletonLine[data-w='short'] {
+  width: 40%;
+}
+
+.confirmIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--mantine-color-red-5) 14%, transparent);
+  color: var(--mantine-color-red-6);
+}
