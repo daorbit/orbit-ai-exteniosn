@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { ActionIcon, Button, Group, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
-import { ArrowLeft } from "lucide-react";
+import { ActionIcon, Button, PasswordInput, Stack, Text, TextInput, Title } from "@mantine/core";
+import { ArrowLeft, KeyRound, LockKeyhole, LogOut } from "lucide-react";
 import { OrbitMark } from "@/orbit/components/OrbitMark";
 import { getStatus, OrbitApiError } from "@/orbit/orbitApiClient";
 import { useCredentials } from "./useCredentials";
@@ -46,52 +46,98 @@ export function SettingsScreen({
     }
   }
 
+  const connected = Boolean(onCancel);
+
   return (
     <div className={classes.wrap}>
-      <Group gap={8} wrap="nowrap" className={classes.header}>
-        {onCancel && (
-          <ActionIcon variant="subtle" color="gray" onClick={onCancel} aria-label="Back">
-            <ArrowLeft size={18} />
+      {connected && (
+        <div className={classes.topBar}>
+          <ActionIcon variant="subtle" color="gray" size={30} onClick={onCancel} aria-label="Back">
+            <ArrowLeft size={16} />
           </ActionIcon>
-        )}
-        <OrbitMark size={32} />
-        <Title order={3} size="1.1em">Connect Orbit AI</Title>
-      </Group>
+          <span className={classes.topTitle}>Connection</span>
+        </div>
+      )}
 
-      <Stack gap="sm">
-        <TextInput
-          label="Workspace ID"
-          placeholder="wksp_..."
-          value={workspaceId}
-          onChange={(e) => setWorkspaceId(e.currentTarget.value)}
-        />
-        <PasswordInput
-          label="API key"
-          placeholder="sk_live_..."
-          value={apiKey}
-          onChange={(e) => setApiKey(e.currentTarget.value)}
-        />
-
-        {error && (
-          <Text size="sm" c="red.6">
-            {error}
+      <div className={classes.content}>
+        <div className={classes.head}>
+          <div className={classes.mark}>
+            <OrbitMark size={44} />
+          </div>
+          <Title order={2} className={classes.title}>
+            {connected ? "Your Orbit connection" : "Connect Orbit"}
+          </Title>
+          <Text className={classes.sub}>
+            {connected
+              ? "Change the workspace or key this panel uses, or disconnect it."
+              : "Link this panel to your workspace to start asking questions."}
           </Text>
+        </div>
+
+        {!connected && (
+          <ol className={classes.steps}>
+            <li>
+              <span className={classes.stepNum}>1</span>
+              <span>
+                Open <b>Settings → Developers</b> in the Orbit AI web app.
+              </span>
+            </li>
+            <li>
+              <span className={classes.stepNum}>2</span>
+              <span>Create an API key for your workspace.</span>
+            </li>
+            <li>
+              <span className={classes.stepNum}>3</span>
+              <span>Paste the workspace ID and key below.</span>
+            </li>
+          </ol>
         )}
 
-        <Button onClick={connect} loading={connecting} fullWidth>
-          Save & Connect
-        </Button>
+        <Stack gap="sm">
+          <TextInput
+            label="Workspace ID"
+            placeholder="wksp_..."
+            value={workspaceId}
+            onChange={(e) => setWorkspaceId(e.currentTarget.value)}
+            classNames={{ input: classes.input }}
+          />
+          <PasswordInput
+            label="API key"
+            placeholder="sk_live_..."
+            value={apiKey}
+            onChange={(e) => setApiKey(e.currentTarget.value)}
+            leftSection={<KeyRound size={14} />}
+            classNames={{ input: classes.input }}
+          />
 
-        {onCancel && (
-          <Button onClick={() => clear()} variant="subtle" color="red" fullWidth>
-            Disconnect
+          {error && (
+            <Text size="xs" c="red.6" lh={1.5}>
+              {error}
+            </Text>
+          )}
+
+          <Button onClick={connect} loading={connecting} fullWidth size="md" mt={4} className={classes.cta}>
+            {connected ? "Save changes" : "Connect"}
           </Button>
-        )}
 
-        <Text size="xs" c="dimmed">
-          Don't have a key? Generate one from Settings → Developers in the Orbit AI web app, under your workspace.
-        </Text>
-      </Stack>
+          {connected && (
+            <Button
+              onClick={() => clear()}
+              variant="subtle"
+              color="red"
+              fullWidth
+              leftSection={<LogOut size={14} />}
+            >
+              Disconnect
+            </Button>
+          )}
+        </Stack>
+
+        <div className={classes.note}>
+          <LockKeyhole size={13} />
+          <span>Your key is stored only in this browser and sent only to Orbit.</span>
+        </div>
+      </div>
     </div>
   );
 }

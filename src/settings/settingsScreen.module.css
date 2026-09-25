@@ -1,14 +1,138 @@
 .wrap {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 24px 20px;
   height: 100vh;
   box-sizing: border-box;
+  overflow-y: auto;
+  background: var(--mantine-color-body);
 }
 
-.header {
+.topBar {
   display: flex;
   align-items: center;
+  gap: 6px;
+  height: 52px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--mantine-color-default-border);
+}
+
+.topTitle {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 9vh 20px 24px;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.mark {
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.mark::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mantine-color-emerald-5) 28%, transparent), transparent 70%);
+  filter: blur(6px);
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  max-width: 290px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mantine-color-dimmed);
+}
+
+/* How to get a key, as three short numbered steps. */
+.steps {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  margin: 0;
+  padding: 14px;
+  list-style: none;
+  border-radius: 12px;
+  border: 1px solid var(--mantine-color-default-border);
+  background: color-mix(in srgb, var(--mantine-color-default) 50%, transparent);
+}
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--mantine-color-dimmed);
+}
+
+.steps b {
+  font-weight: 600;
+  color: var(--mantine-color-text);
+}
+
+.stepNum {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent);
+  color: var(--mantine-color-emerald-5);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.input {
+  height: 40px;
+}
+
+.input:focus,
+.input:focus-within {
+  border-color: var(--mantine-color-emerald-5);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mantine-color-emerald-5) 16%, transparent);
+}
+
+.cta {
+  height: 42px;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--mantine-color-dimmed);
+}
+
+.note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
