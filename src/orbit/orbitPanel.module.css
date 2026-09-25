@@ -129,6 +129,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 9px 2px;
   border-top: 1px solid var(--mantine-color-default-border);
   font-size: 13px;
@@ -512,9 +513,6 @@
     var(--composer-edge) border-box;
   background-size: 100% 100%, 300% 100%;
   animation: composer-drift 9s linear infinite;
-
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 220ms ease;
 }
 
 @keyframes composer-drift {
@@ -549,10 +547,6 @@
   }
 }
 
-.composer:focus-within {
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
-}
-
 .composer:focus-within::before {
   opacity: 0.45;
   filter: blur(18px);
@@ -573,8 +567,6 @@
     #bef264 89%,
     #a78bfa 100%
   );
-
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
 }
 
 :global([data-mantine-color-scheme='dark']) .composer::before {
