@@ -3,12 +3,14 @@ import {
   ActionIcon, Box, Group, Loader, Menu, ScrollArea, Stack, Text, Textarea, Title, Tooltip, UnstyledButton,
 } from "@mantine/core";
 import {
-  AlertTriangle, ArrowUp, ArrowUpRight, Check, ChevronDown, Copy, CornerDownRight, Download, FileText,
-  Globe, History, Lock, MessageSquareText, Palette, Pencil, Paperclip, RefreshCw, Settings, Share2,
+  AlertTriangle, ArrowDown, ArrowUp, ArrowUpRight, Check, ChevronDown, ClipboardList, Copy, CornerDownRight,
+  Download, FileText, History, Lock, MessageSquareText, Palette, Pencil, Paperclip, RefreshCw, Settings, Share2,
   Square, SquarePen, X,
 } from "lucide-react";
 import { OrbitMark } from "@/orbit/components/OrbitMark";
 import { UserQuestion } from "@/orbit/components/UserQuestion";
+import { ConfirmActionIcon } from "@/orbit/components/ConfirmActionIcon";
+import { CitationsList } from "@/orbit/components/CitationsList";
 import { normalizeQuestion } from "@/orbit/formatQuestion";
 import { RichText, toPlainText } from "@/orbit/components/RichText";
 import { DataDigestTable, csvFromDigest, formatDigestAsText, isDataDigest } from "@/orbit/components/DataDigestTable";
@@ -41,15 +43,18 @@ function greeting() {
   return "Good evening";
 }
 
-async function copyText(text: string) {
+async function copyText(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-async function copyDigestAsReport(digest: unknown) {
-  if (!isDataDigest(digest)) return;
-  await copyText(formatDigestAsText(digest));
+async function copyDigestAsReport(digest: unknown): Promise<boolean> {
+  if (!isDataDigest(digest)) return false;
+  return copyText(formatDigestAsText(digest));
 }
 
 function downloadDigestAsCsv(digest: unknown) {
@@ -65,17 +70,18 @@ function downloadDigestAsCsv(digest: unknown) {
   URL.revokeObjectURL(url);
 }
 
-async function copyImage(url: string) {
+async function copyImage(url: string): Promise<boolean> {
   try {
     const res = await fetch(url);
     const blob = await res.blob();
     await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+    return true;
   } catch {
-    await copyText(url);
+    return copyText(url);
   }
 }
 
-async function shareTurn(message: OrbitMessage) {
+async function shareTurn(message: OrbitMessage): Promise<"shared" | "copied" | null> {
   const plain = toPlainText(message.content);
   const shareData: ShareData = message.imageUrl
     ? { title: "Orbit AI", text: plain || undefined, url: message.imageUrl }
@@ -84,11 +90,13 @@ async function shareTurn(message: OrbitMessage) {
   if (navigator.share) {
     try {
       await navigator.share(shareData);
-    } catch {}
-    return;
+      return "shared";
+    } catch {
+      return null;
+    }
   }
 
-  await copyText(message.imageUrl ?? plain);
+  return (await copyText(message.imageUrl ?? plain)) ? "copied" : null;
 }
 
 async function downloadImage(url: string) {
@@ -205,90 +213,46 @@ function TurnActions({
       className={classes.turnActions}
       data-pinned={pinned || undefined}
     >
-      <Tooltip label={message.imageUrl ? "Copy image" : "Copy"} withArrow>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="sm"
-          radius="xl"
-          onClick={() =>
-            message.imageUrl ? copyImage(message.imageUrl) : copyText(toPlainText(message.content))
-          }
-          aria-label="Copy"
-        >
-          <Copy size={13} />
-        </ActionIcon>
-      </Tooltip>
-      <Tooltip label="Share" withArrow>
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="sm"
-          radius="xl"
-          onClick={() => shareTurn(message)}
-          aria-label="Share"
-        >
-          <Share2 size={13} />
-        </ActionIcon>
-      </Tooltip>
+      <ConfirmActionIcon
+        label={message.imageUrl ? "Copy image" : "Copy"}
+        icon={<Copy size={13} />}
+        onAction={async () => {
+          const ok = message.imageUrl
+            ? await copyImage(message.imageUrl)
+            : await copyText(toPlainText(message.content));
+          return ok ? "Copied" : null;
+        }}
+      />
+      <ConfirmActionIcon
+        label="Share"
+        icon={<Share2 size={13} />}
+        onAction={async () => ((await shareTurn(message)) === "copied" ? "Copied to clipboard" : null)}
+      />
       {isDataDigest(message.dataDigest) && (
         <>
-          <Tooltip label="Copy as report" withArrow>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="sm"
-              radius="xl"
-              onClick={() => copyDigestAsReport(message.dataDigest)}
-              aria-label="Copy as report"
-            >
-              <Download size={13} />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label="Download as CSV" withArrow>
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="sm"
-              radius="xl"
-              onClick={() => downloadDigestAsCsv(message.dataDigest)}
-              aria-label="Download as CSV"
-            >
-              <Download size={13} />
-            </ActionIcon>
-          </Tooltip>
+          <ConfirmActionIcon
+            label="Copy as report"
+            icon={<ClipboardList size={13} />}
+            onAction={async () => ((await copyDigestAsReport(message.dataDigest)) ? "Report copied" : null)}
+          />
+          <ConfirmActionIcon
+            label="Download as CSV"
+            icon={<Download size={13} />}
+            onAction={() => {
+              downloadDigestAsCsv(message.dataDigest);
+              return "Downloaded";
+            }}
+          />
         </>
       )}
       {onRegenerate && (
-        <Tooltip label="Regenerate" withArrow>
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="sm"
-            radius="xl"
-            onClick={onRegenerate}
-            disabled={regenerating}
-            aria-label="Regenerate"
-          >
-            <RefreshCw size={13} />
-          </ActionIcon>
-        </Tooltip>
+        <ConfirmActionIcon
+          label="Regenerate"
+          icon={<RefreshCw size={13} />}
+          onAction={() => onRegenerate()}
+          disabled={regenerating}
+        />
       )}
-    </Group>
-  );
-}
-
-function CitationsList({ citations }: { citations?: { url: string; title: string }[] }) {
-  if (!citations?.length) return null;
-
-  return (
-    <Group gap={6} mt={10} wrap="wrap" align="center">
-      <Globe size={12} style={{ color: "var(--mantine-color-dimmed)", flexShrink: 0 }} />
-      {citations.map((c, i) => (
-        <Text key={c.url} size="xs" c="dimmed">
-          {i + 1}. {c.title}
-        </Text>
-      ))}
     </Group>
   );
 }
@@ -541,6 +505,9 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   const [imageError, setImageError] = useState<string | null>(null);
   const [documentError, setDocumentError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
+  const viewport = useRef<HTMLDivElement>(null);
+  const followBottom = useRef(true);
+  const [showJump, setShowJump] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const manualToggle = useRef(false);
 
@@ -644,6 +611,7 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
     const newLastId = last?.id ?? null;
     if (newLastId !== lastMessageId.current) {
       lastMessageId.current = newLastId;
+      followBottom.current = true;
       bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [messages, thinking, last]);
@@ -651,10 +619,27 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
   useEffect(() => {
     if (!typing) return;
     const id = setInterval(() => {
-      bottom.current?.scrollIntoView({ behavior: "auto", block: "end" });
+      if (followBottom.current) bottom.current?.scrollIntoView({ behavior: "auto", block: "end" });
     }, 120);
     return () => clearInterval(id);
   }, [typing]);
+
+  const onScrollPositionChange = ({ y }: { y: number }) => {
+    const el = viewport.current;
+    if (el) {
+      const nearBottom = el.scrollHeight - y - el.clientHeight < 80;
+      followBottom.current = nearBottom;
+      setShowJump(!nearBottom);
+    }
+    if (y < 80 && hasOlderMessages && !loadingOlderMessages) {
+      void loadOlderMessages();
+    }
+  };
+
+  const jumpToLatest = () => {
+    followBottom.current = true;
+    bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  };
 
   if (!available) {
     return (
@@ -905,72 +890,83 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           </div>
         ) : (
           <>
-            <ScrollArea
-              className={classes.scroll}
-              type="hover"
-              scrollbarSize={7}
-              onScrollPositionChange={({ y }) => {
-                if (y < 80 && hasOlderMessages && !loadingOlderMessages) {
-                  void loadOlderMessages();
-                }
-              }}
-            >
-              <div className={classes.column}>
-                <Stack gap={28}>
-                  {loadingOlderMessages && (
-                    <Group justify="center" py={4}>
-                      <Loader size={13} type="dots" color="var(--mantine-color-emerald-5)" />
-                    </Group>
-                  )}
-                  {messages.map((m, i) => (
-                    <Turn
-                      key={m.id}
-                      message={m}
-                      isLast={i === messages.length - 1}
-                      live={m.id === liveId}
-                      onRevealed={() => setLiveId(null)}
-                      onRegenerate={() => void regenerateLast()}
-                      onEdit={(text) => void editAndResend(m.id, text)}
-                      editable={!thinking}
-                      regenerating={thinking}
-                    />
-                  ))}
-
-                  {thinking && generatingImage && (
-                    <div className={classes.answer}>
-                      <div className={classes.answerHead}>
-                        <OrbitMark size={20} className={classes.markPulse} />
-                        <span className={classes.thinking}>Painting</span>
+            <div className={classes.scrollWrap}>
+              <ScrollArea
+                className={classes.scroll}
+                type="hover"
+                scrollbarSize={7}
+                viewportRef={viewport}
+                onScrollPositionChange={onScrollPositionChange}
+              >
+                <div className={classes.column}>
+                  <Stack gap={28}>
+                    {loadingOlderMessages && (
+                      <Group justify="center" py={4}>
+                        <Loader size={13} type="dots" color="var(--mantine-color-emerald-5)" />
+                      </Group>
+                    )}
+                    {messages.map((m, i) => (
+                      <Turn
+                        key={m.id}
+                        message={m}
+                        isLast={i === messages.length - 1}
+                        live={m.id === liveId}
+                        onRevealed={() => setLiveId(null)}
+                        onRegenerate={() => void regenerateLast()}
+                        onEdit={(text) => void editAndResend(m.id, text)}
+                        editable={!thinking}
+                        regenerating={thinking}
+                      />
+                    ))}
+  
+                    {thinking && generatingImage && (
+                      <div className={classes.answer}>
+                        <div className={classes.answerHead}>
+                          <OrbitMark size={20} className={classes.markPulse} />
+                          <span className={classes.thinking}>Painting</span>
+                        </div>
+                        <div className={classes.generatingImage}>
+                          <div className={classes.generatingImageSweep} />
+                          <Palette size={20} className={classes.generatingImageIcon} />
+                        </div>
                       </div>
-                      <div className={classes.generatingImage}>
-                        <div className={classes.generatingImageSweep} />
-                        <Palette size={20} className={classes.generatingImageIcon} />
+                    )}
+  
+                    {thinking && !generatingImage && <ThinkingRow label="Thinking" />}
+  
+                    {!thinking && followUps.length > 0 && (
+                      <div className={classes.followUps}>
+                        <div className={classes.followUpsLabel}>Related</div>
+                        {followUps.map((q) => (
+                          <UnstyledButton
+                            key={q}
+                            className={classes.followUp}
+                            onClick={() => sendAndStop(q)}
+                          >
+                            <CornerDownRight size={13} className={classes.starterIcon} />
+                            <span className={classes.starterText}>{q}</span>
+                          </UnstyledButton>
+                        ))}
                       </div>
-                    </div>
-                  )}
-
-                  {thinking && !generatingImage && <ThinkingRow label="Thinking" />}
-
-                  {!thinking && followUps.length > 0 && (
-                    <div className={classes.followUps}>
-                      <div className={classes.followUpsLabel}>Related</div>
-                      {followUps.map((q) => (
-                        <UnstyledButton
-                          key={q}
-                          className={classes.followUp}
-                          onClick={() => sendAndStop(q)}
-                        >
-                          <CornerDownRight size={13} className={classes.starterIcon} />
-                          <span className={classes.starterText}>{q}</span>
-                        </UnstyledButton>
-                      ))}
-                    </div>
-                  )}
-
-                  <div ref={bottom} />
-                </Stack>
-              </div>
-            </ScrollArea>
+                    )}
+  
+                    <div ref={bottom} />
+                  </Stack>
+                </div>
+              </ScrollArea>
+              {showJump && (
+                <ActionIcon
+                  variant="default"
+                  radius="xl"
+                  size={32}
+                  className={classes.jumpToLatest}
+                  onClick={jumpToLatest}
+                  aria-label="Jump to latest"
+                >
+                  <ArrowDown size={15} />
+                </ActionIcon>
+              )}
+            </div>
 
             {composer}
           </>
