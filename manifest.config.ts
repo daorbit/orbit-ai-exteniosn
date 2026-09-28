@@ -30,7 +30,7 @@ export default defineManifest({
   permissions: ["sidePanel", "storage", "tabs"],
   web_accessible_resources: [
     {
-      resources: ["da-ai-dark-mode.png", "da-ai-light-mode.png"],
+      resources: ["orbit-ai-dark.webp", "orbit-ai-light.webp"],
       matches: ["<all_urls>"],
     },
   ],

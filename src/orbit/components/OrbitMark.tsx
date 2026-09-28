@@ -12,7 +12,7 @@ export function OrbitMark({
   return (
     <img
       src={chrome.runtime.getURL(
-        scheme === "dark" ? "da-ai-dark-mode.png" : "da-ai-light-mode.png",
+        scheme === "dark" ? "orbit-ai-dark.webp" : "orbit-ai-light.webp",
       )}
       alt=""
       aria-hidden="true"
@@ -22,10 +22,9 @@ export function OrbitMark({
       style={{
         width: size,
         height: size,
-        borderRadius: Math.round(size * 0.28),
         display: "block",
         flexShrink: 0,
-        objectFit: "cover",
+        objectFit: "contain",
       }}
     />
   );

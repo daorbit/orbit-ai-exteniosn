@@ -296,9 +296,9 @@ function AnswerText({
 
   return (
     <Text
-      size="sm"
       lh={1.7}
       c={message.failed ? "dimmed" : undefined}
+      className={classes.answerText}
       style={{ whiteSpace: "pre-wrap" }}
     >
       <RichText text={shown} animate={live} />
@@ -404,7 +404,7 @@ function UserTurn({
             </ActionIcon>
           </Tooltip>
           <Box className={classes.userTurn}>
-            <Text size="sm" lh={1.6} style={{ whiteSpace: "pre-wrap" }}>
+            <Text lh={1.6} className={classes.userTurnText} style={{ whiteSpace: "pre-wrap" }}>
               {message.content}
             </Text>
           </Box>
