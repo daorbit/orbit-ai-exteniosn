@@ -489,26 +489,90 @@
 }
 
 .composer {
+  --composer-edge: linear-gradient(
+    90deg,
+    #8b5cf6 0%,
+    #a855f7 9%,
+    #f0abfc 16%,
+    #fbbf24 27%,
+    #a3e635 39%,
+    #22c55e 50%,
+    #a855f7 59%,
+    #f0abfc 66%,
+    #fbbf24 77%,
+    #a3e635 89%,
+    #8b5cf6 100%
+  );
+
   position: relative;
   border-radius: 20px;
-  border: 1px solid var(--mantine-color-default-border);
-  background: var(--mantine-color-body);
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.04),
-    0 4px 16px rgb(0 0 0 / 0.05);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--mantine-color-body), var(--mantine-color-body)) padding-box,
+    var(--composer-edge) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: composer-drift 9s linear infinite;
 }
 
-.composer:focus-within {
-  border-color: color-mix(in srgb, var(--mantine-color-text) 22%, var(--mantine-color-default-border));
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.05),
-    0 6px 20px rgb(0 0 0 / 0.07);
+@keyframes composer-drift {
+  from { background-position: 0 0, 0% 50%; }
+  to   { background-position: 0 0, 100% 50%; }
+}
+
+.composer::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--composer-edge);
+  background-size: 300% 100%;
+  animation: glow-drift 9s linear infinite;
+  filter: blur(14px);
+  opacity: 0.28;
+  transition: opacity 220ms ease, filter 220ms ease;
+}
+
+@keyframes glow-drift {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer,
+  .composer::before {
+    animation: none;
+  }
+}
+
+.composer:focus-within::before {
+  opacity: 0.45;
+  filter: blur(18px);
 }
 
 :global([data-mantine-color-scheme='dark']) .composer {
-  background: var(--mantine-color-default);
-  box-shadow: 0 4px 18px rgb(0 0 0 / 0.25);
+  --composer-edge: linear-gradient(
+    90deg,
+    #a78bfa 0%,
+    #c084fc 9%,
+    #f5b8fb 16%,
+    #fcd34d 27%,
+    #bef264 39%,
+    #34d399 50%,
+    #c084fc 59%,
+    #f5b8fb 66%,
+    #fcd34d 77%,
+    #bef264 89%,
+    #a78bfa 100%
+  );
+}
+
+:global([data-mantine-color-scheme='dark']) .composer::before {
+  opacity: 0.18;
+}
+
+:global([data-mantine-color-scheme='dark']) .composer:focus-within::before {
+  opacity: 0.32;
 }
 
 .composerFoot .send {
