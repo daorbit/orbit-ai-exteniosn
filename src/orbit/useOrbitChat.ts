@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as api from "./orbitApiClient";
 import { useCredentials } from "@/settings/useCredentials";
 import { clearOrbitDraft, readOrbitDraft, writeOrbitDraft } from "./orbitDraftStorage";
+import { normalizeQuestion } from "./formatQuestion";
 import type {
   OrbitConversationSummary,
   OrbitMessage,
@@ -263,7 +264,7 @@ export function useOrbitChat() {
 
   const send = useCallback(
     async (raw?: string) => {
-      const question = (raw ?? input).trim();
+      const question = normalizeQuestion(raw ?? input);
       const image = pendingImage;
       const document = pendingDocument;
 
@@ -325,7 +326,7 @@ export function useOrbitChat() {
 
   const editAndResend = useCallback(
     async (messageId: string, text: string) => {
-      const question = text.trim();
+      const question = normalizeQuestion(text);
       if (!question || thinking) return;
 
       const current = historyRef.current;

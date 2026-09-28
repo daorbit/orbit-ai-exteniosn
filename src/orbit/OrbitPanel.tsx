@@ -8,6 +8,8 @@ import {
   Square, SquarePen, X,
 } from "lucide-react";
 import { OrbitMark } from "@/orbit/components/OrbitMark";
+import { UserQuestion } from "@/orbit/components/UserQuestion";
+import { normalizeQuestion } from "@/orbit/formatQuestion";
 import { RichText, toPlainText } from "@/orbit/components/RichText";
 import { DataDigestTable, csvFromDigest, formatDigestAsText, isDataDigest } from "@/orbit/components/DataDigestTable";
 import { pickOrbitSuggestionsForHostname } from "@/orbit/orbitSuggestions";
@@ -324,7 +326,7 @@ function UserTurn({
   };
 
   const commit = () => {
-    const text = draft.trim();
+    const text = normalizeQuestion(draft);
     setEditing(false);
     if (!text || text === message.content) return;
     onEdit?.(text);
@@ -403,11 +405,7 @@ function UserTurn({
               <Pencil size={13} />
             </ActionIcon>
           </Tooltip>
-          <Box className={classes.userTurn}>
-            <Text lh={1.6} className={classes.userTurnText} style={{ whiteSpace: "pre-wrap" }}>
-              {message.content}
-            </Text>
-          </Box>
+          <UserQuestion text={message.content} />
         </Group>
       )}
     </Stack>
@@ -731,21 +729,12 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
           autosize
           minRows={1}
           maxRows={started ? 8 : 6}
-          px="md"
-          pt={10}
-          pb={2}
+          px={14}
+          pt={12}
+          pb={4}
           disabled={thinking}
           data-autofocus
           classNames={{ input: classes.composerInput, wrapper: classes.composerInputWrapper }}
-          styles={{
-            input: {
-              fontSize: 15,
-              lineHeight: 1.5,
-              background: "transparent",
-              border: "none",
-              boxShadow: "none",
-            },
-          }}
         />
 
         {imageError && (

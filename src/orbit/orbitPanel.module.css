@@ -292,10 +292,6 @@
   overflow-wrap: anywhere;
 }
 
-.userTurnText {
-  font-size: 13px;
-}
-
 .userTurnEdit {
   opacity: 0;
   transition: opacity 120ms ease;
@@ -605,12 +601,31 @@
   background: transparent;
 }
 
-.composerInput {
-  scrollbar-width: none;
+.composer .composerInput {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--mantine-color-text);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mantine-color-default-border) transparent;
+}
+
+.composer .composerInput::placeholder {
+  color: var(--mantine-color-dimmed);
+  opacity: 0.85;
 }
 
 .composerInput::-webkit-scrollbar {
-  display: none;
+  width: 4px;
+}
+
+.composerInput::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--mantine-color-default-border);
 }
 
 .composerInputWrapper {
