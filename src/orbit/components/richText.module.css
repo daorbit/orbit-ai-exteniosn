@@ -19,6 +19,16 @@
   }
 }
 
+.list.list,
+.list.list li {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.table.table {
+  font-size: 0.95em;
+}
+
 .codeBlock :global(.hljs) {
   background: transparent;
   color: var(--mantine-color-text);

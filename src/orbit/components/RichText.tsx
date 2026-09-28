@@ -151,7 +151,7 @@ function renderTable(
   }
 
   const node = (
-    <Table key={key++} striped withTableBorder withColumnBorders mt={4} mb={4} fz="sm">
+    <Table key={key++} striped withTableBorder withColumnBorders mt={4} mb={4} className={classes.table}>
       <Table.Thead>
         <Table.Tr>
           {header.map((cell, ci) => (
@@ -213,7 +213,14 @@ function renderList(
   }
 
   const node = (
-    <List key={key++} type={ordered ? "ordered" : "unordered"} size="sm" spacing={4} mt={4} mb={4}>
+    <List
+      key={key++}
+      type={ordered ? "ordered" : "unordered"}
+      spacing={4}
+      mt={4}
+      mb={4}
+      className={classes.list}
+    >
       {items.map((item, idx) => (
         <List.Item key={idx} className={animate ? classes.fadeIn : undefined}>
           {renderInline(item.text, key * 1000 + idx)}
@@ -287,7 +294,7 @@ function renderBlocks(text: string, keyBase: number, animate: boolean): React.Re
     }
     const paragraph = lines.slice(start, i).join("\n");
     out.push(
-      <Text key={key++} span display="block" mb={start > 0 ? 6 : 0} className={fadeClass}>
+      <Text key={key++} span inherit display="block" mb={start > 0 ? 6 : 0} className={fadeClass}>
         {renderInline(paragraph, key * 1000)}
       </Text>,
     );

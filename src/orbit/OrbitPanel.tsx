@@ -298,10 +298,8 @@ function AnswerText({
 
   return (
     <Text
-      lh={1.7}
       c={message.failed ? "dimmed" : undefined}
       className={classes.answerText}
-      style={{ whiteSpace: "pre-wrap" }}
     >
       <RichText text={shown} animate={live} />
     </Text>
