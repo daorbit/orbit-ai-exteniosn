@@ -27,20 +27,14 @@ export function usePageContext(): PageContext {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (cancelled) return;
 
-        if (!tab?.url) {
-          console.warn("[usePageContext] no active tab or tab.url", tab);
+        const url = tab?.url || tab?.pendingUrl;
+        const hostname = url ? readableHostname(url) : null;
+        if (!url || !hostname) {
           setContext(null);
           return;
         }
 
-        const hostname = readableHostname(tab.url);
-        if (!hostname) {
-          console.warn("[usePageContext] url not http(s), skipping:", tab.url);
-          setContext(null);
-          return;
-        }
-
-        setContext({ hostname, title: tab.title ?? hostname, url: tab.url });
+        setContext({ hostname, title: tab.title ?? hostname, url });
       } catch (e) {
         console.error("[usePageContext] chrome.tabs.query failed:", e);
         if (!cancelled) setContext(null);
