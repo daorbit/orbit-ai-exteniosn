@@ -188,15 +188,23 @@ function ModelPicker({
 
 function TurnActions({
   message,
+  pinned,
   onRegenerate,
   regenerating,
 }: {
   message: OrbitMessage;
+  pinned?: boolean;
   onRegenerate?: () => void;
   regenerating?: boolean;
 }) {
   return (
-    <Group gap={2} mt={6} wrap="nowrap" align="center">
+    <Group
+      gap={2}
+      wrap="nowrap"
+      align="center"
+      className={classes.turnActions}
+      data-pinned={pinned || undefined}
+    >
       <Tooltip label={message.imageUrl ? "Copy image" : "Copy"} withArrow>
         <ActionIcon
           variant="subtle"
@@ -474,6 +482,7 @@ function Turn({
         {!message.failed && !live && (
           <TurnActions
             message={message}
+            pinned={isLast}
             onRegenerate={isLast ? onRegenerate : undefined}
             regenerating={regenerating}
           />
@@ -794,14 +803,13 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <Tooltip label={thinking ? "Stop" : "Send"} withArrow>
               <ActionIcon
                 className={classes.send}
-                color={thinking ? "red" : "emerald"}
                 radius="xl"
-                size={32}
+                size={30}
                 disabled={!thinking && empty}
                 onClick={() => (thinking ? stop() : sendAndStop())}
                 aria-label={thinking ? "Stop" : "Send"}
               >
-                {thinking ? <Square size={11} fill="currentColor" /> : <ArrowUp size={15} />}
+                {thinking ? <Square size={10} fill="currentColor" /> : <ArrowUp size={16} strokeWidth={2.4} />}
               </ActionIcon>
             </Tooltip>
           </Group>
