@@ -414,8 +414,8 @@ function Turn({
         {isLast && onRegenerate && (
           <UnstyledButton onClick={onRegenerate} disabled={regenerating}>
             <Group gap={5} wrap="nowrap">
-              <RefreshCw size={12} color="var(--mantine-color-emerald-5)" />
-              <Text size="xs" c="emerald.5" fw={500}>
+              <RefreshCw size={12} color="var(--mantine-color-brand-5)" />
+              <Text size="xs" c="brand.5" fw={500}>
                 Ask again
               </Text>
             </Group>
@@ -771,7 +771,7 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
             <Tooltip label={imageMode ? "Cancel drawing" : "Draw a picture"} withArrow>
               <ActionIcon
                 variant={imageMode ? "filled" : "subtle"}
-                color={imageMode ? "emerald" : "gray"}
+                color={imageMode ? "brand" : "gray"}
                 radius="xl"
                 size="sm"
                 disabled={thinking || !!pendingImage || !!pendingDocument}
@@ -856,10 +856,12 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
 
       <div className={classes.body} data-state={started ? "started" : "empty"}>
         {!started ? (
+          <>
+          <div className={classes.heroArea}>
           <div className={classes.hero}>
             <div className={classes.heroHead}>
               <div className={classes.heroMark}>
-                <OrbitMark size={44} />
+                <OrbitMark size={80} />
               </div>
               <Title order={2} className={classes.heroTitle}>
                 {greeting()}
@@ -870,8 +872,6 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                   : "Ask anything, attach a file, or draw a picture."}
               </Text>
             </div>
-
-            {composer}
 
             <div className={classes.starters} data-ready>
               <div className={classes.startersLabel}>Try asking</div>
@@ -888,6 +888,9 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
               ))}
             </div>
           </div>
+          </div>
+          {composer}
+          </>
         ) : (
           <>
             <div className={classes.scrollWrap}>
@@ -902,7 +905,7 @@ export function OrbitPanel({ onOpenSettings }: { onOpenSettings: () => void }) {
                   <Stack gap={28}>
                     {loadingOlderMessages && (
                       <Group justify="center" py={4}>
-                        <Loader size={13} type="dots" color="var(--mantine-color-emerald-5)" />
+                        <Loader size={13} type="dots" color="var(--mantine-color-brand-5)" />
                       </Group>
                     )}
                     {messages.map((m, i) => (

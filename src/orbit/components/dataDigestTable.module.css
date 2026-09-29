@@ -35,7 +35,7 @@
 }
 
 .delta[data-tone='up'] {
-  color: var(--mantine-color-emerald-6);
+  color: var(--mantine-color-brand-6);
 }
 
 .delta[data-tone='down'] {
@@ -81,7 +81,7 @@
 .barFill {
   height: 100%;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--mantine-color-emerald-5) 70%, transparent);
+  background: color-mix(in srgb, var(--mantine-color-brand-5) 70%, transparent);
 }
 
 .barCount {

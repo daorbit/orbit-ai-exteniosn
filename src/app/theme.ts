@@ -1,8 +1,8 @@
 import { createTheme, rem, ThemeIcon } from "@mantine/core";
 
 export const theme = createTheme({
-  primaryColor: "emerald",
-  primaryShade: { light: 6, dark: 7 },
+  primaryColor: "brand",
+  primaryShade: { light: 6, dark: 5 },
   fontFamily: "'Inter Variable', Inter, system-ui, -apple-system, sans-serif",
   fontFamilyMonospace: "ui-monospace, 'SF Mono', Menlo, monospace",
   headings: {
@@ -17,13 +17,13 @@ export const theme = createTheme({
   defaultRadius: "md",
   cursorType: "pointer",
   colors: {
-    emerald: [
-      "#ecfdf5", "#d1fae5", "#a7f3d0", "#6ee7b7", "#34d399",
-      "#10b981", "#059669", "#047857", "#065f46", "#064e3b",
+    brand: [
+      "#f0fdfa", "#ccfbf1", "#99f6e4", "#5eead4", "#2dd4bf",
+      "#14b8a6", "#0d9488", "#0f766e", "#115e59", "#134e4a",
     ],
     dark: [
-      "#c9ced6", "#a8aeb8", "#8b929e", "#5f6673", "#3a3f4a",
-      "#2b2f38", "#22252c", "#1a1c22", "#131519", "#0b0c0f",
+      "#f5f5f5", "#d4d4d4", "#a3a3a3", "#737373", "#3a3a3a",
+      "#292929", "#1c1c1c", "#161616", "#111111", "#000000",
     ],
   },
   shadows: {

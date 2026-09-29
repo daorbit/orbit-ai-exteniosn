@@ -345,7 +345,7 @@ export function OrbitHistoryDrawer({
                           </ActionIcon>
                           <ActionIcon
                             variant="subtle"
-                            color="emerald"
+                            color="brand"
                             size="xs"
                             onClick={() => void commitRename(c.id)}
                             aria-label="Save title"

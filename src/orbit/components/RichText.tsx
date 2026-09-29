@@ -71,7 +71,7 @@ function renderInline(text: string, keyBase: number): React.ReactNode[] {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          c="emerald.5"
+          c="brand.5"
           fw={500}
           underline="always"
         >
