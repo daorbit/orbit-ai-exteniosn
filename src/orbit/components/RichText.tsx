@@ -1,11 +1,16 @@
-import { Anchor, Code, List, Table, Text, Title } from "@mantine/core";
+import { Anchor, Code, Divider, List, Table, Text, Title } from "@mantine/core";
 import { CodeHighlight } from "@mantine/code-highlight";
 import classes from "./richText.module.css";
 
 const FENCE = /```([a-zA-Z0-9_+-]*)\n?([\s\S]*?)```/g;
 
 const INLINE =
-  /(\[[^\]]+\]\(https?:\/\/[^\s)]+\))|(`[^`\n]+`)|(\*\*[^*\n]+\*\*)|(#[0-9a-fA-F]{6}\b)/g;
+  /(\[[^\]]+\]\(https?:\/\/[^\s)]+\))|(`[^`\n]+`)|(\*\*[^*\n]+\*\*)|((?<![*\w])\*(?!\s)[^*\n]+?\*(?![*\w]))|(#[0-9a-fA-F]{6}\b)/g;
+
+const RULE = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/;
+const QUOTE = /^\s*>\s?(.*)$/;
+
+const HEADING_CLASS = [classes.h1, classes.h2, classes.h3];
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
@@ -19,13 +24,18 @@ function linkifyBareUrls(text: string): string {
   );
 }
 
+
 export function toPlainText(text: string): string {
   return text
     .replace(FENCE, (_match, _lang: string, code: string) => code.replace(/\n$/, ""))
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "$1 ($2)")
     .replace(/`([^`\n]+)`/g, "$1")
     .replace(/\*\*([^*\n]+)\*\*/g, "$1")
+    .replace(/(^|[^*\w])\*(?!\s)([^*\n]+?)\*(?![*\w])/g, "$1$2")
     .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*>\s?/gm, "")
+    .replace(/^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -59,7 +69,7 @@ function renderInline(text: string, keyBase: number): React.ReactNode[] {
     const at = match.index ?? 0;
     if (at > cursor) out.push(text.slice(cursor, at));
 
-    const [token, link, code, bold, hex] = match;
+    const [token, link, code, bold, italic, hex] = match;
 
     if (link) {
       const close = link.indexOf("](");
@@ -79,6 +89,7 @@ function renderInline(text: string, keyBase: number): React.ReactNode[] {
         </Anchor>,
       );
     } else if (code) {
+
       const inner = code.slice(1, -1);
       out.push(
         HEX_RE.test(inner) ? (
@@ -93,6 +104,12 @@ function renderInline(text: string, keyBase: number): React.ReactNode[] {
       out.push(
         <Text key={key++} span fw={600} c="var(--mantine-color-text)" inherit>
           {renderInline(bold.slice(2, -2), key * 1000)}
+        </Text>,
+      );
+    } else if (italic) {
+      out.push(
+        <Text key={key++} span fs="italic" inherit>
+          {renderInline(italic.slice(1, -1), key * 1000)}
         </Text>,
       );
     } else if (hex) {
@@ -117,6 +134,8 @@ const NUMBERED = /^([ \t]*)\d+[.)]\s+(.+)$/;
 const TABLE_ROW = /^\s*\|(.+)\|\s*$/;
 const TABLE_SEPARATOR = /^\s*\|?(?:\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?\s*$/;
 
+/** Split one `| a | b |` row into its cells, dropping the outer empty edges
+ * a leading/trailing `|` produces. */
 function tableCells(line: string): string[] {
   return line
     .trim()
@@ -142,7 +161,7 @@ function renderTable(
 ): { node: React.ReactNode; next: number; key: number } {
   const header = tableCells(lines[start]);
   let key = keyBase;
-  let i = start + 2;
+  let i = start + 2; // past the header row and its --- separator
 
   const rows: string[][] = [];
   while (i < lines.length && TABLE_ROW.test(lines[i])) {
@@ -151,7 +170,8 @@ function renderTable(
   }
 
   const node = (
-    <Table key={key++} striped withTableBorder withColumnBorders mt={4} mb={4} className={classes.table}>
+    <Table.ScrollContainer key={key++} minWidth={420} className={classes.tableWrap}>
+    <Table striped withTableBorder withColumnBorders fz="sm" className={classes.table}>
       <Table.Thead>
         <Table.Tr>
           {header.map((cell, ci) => (
@@ -169,6 +189,7 @@ function renderTable(
         ))}
       </Table.Tbody>
     </Table>
+    </Table.ScrollContainer>
   );
 
   return { node, next: i, key };
@@ -216,9 +237,8 @@ function renderList(
     <List
       key={key++}
       type={ordered ? "ordered" : "unordered"}
-      spacing={4}
-      mt={4}
-      mb={4}
+      size="sm"
+      spacing={6}
       className={classes.list}
     >
       {items.map((item, idx) => (
@@ -245,20 +265,37 @@ function renderBlocks(text: string, keyBase: number, animate: boolean): React.Re
 
     const heading = HEADING.exec(line);
     if (heading) {
+      const level = Math.min(heading[1].length, 3) - 1;
       out.push(
         <Title
           key={key++}
-          order={HEADING_ORDER[Math.min(heading[1].length, 3) - 1]}
-          size="1em"
-          fw={700}
-          mt={i > 0 ? 10 : 0}
-          mb={2}
-          className={fadeClass}
+          order={HEADING_ORDER[level]}
+          className={[classes.heading, HEADING_CLASS[level], fadeClass].filter(Boolean).join(" ")}
         >
           {renderInline(heading[2], key * 1000)}
         </Title>,
       );
       i++;
+      continue;
+    }
+
+    if (RULE.test(line)) {
+      out.push(<Divider key={key++} className={classes.rule} />);
+      i++;
+      continue;
+    }
+
+    if (QUOTE.test(line)) {
+      const quoted: string[] = [];
+      while (i < lines.length && QUOTE.test(lines[i])) {
+        quoted.push(QUOTE.exec(lines[i])![1]);
+        i++;
+      }
+      out.push(
+        <blockquote key={key++} className={[classes.quote, fadeClass].filter(Boolean).join(" ")}>
+          {renderBlocks(quoted.join("\n"), key * 1000, animate)}
+        </blockquote>,
+      );
       continue;
     }
 
@@ -287,6 +324,8 @@ function renderBlocks(text: string, keyBase: number, animate: boolean): React.Re
       i < lines.length &&
       lines[i].trim() &&
       !HEADING.test(lines[i]) &&
+      !RULE.test(lines[i]) &&
+      !QUOTE.test(lines[i]) &&
       !isListLine(lines[i]) &&
       !isTableStart(lines, i)
     ) {
@@ -294,7 +333,13 @@ function renderBlocks(text: string, keyBase: number, animate: boolean): React.Re
     }
     const paragraph = lines.slice(start, i).join("\n");
     out.push(
-      <Text key={key++} span inherit display="block" mb={start > 0 ? 6 : 0} className={fadeClass}>
+      <Text
+        key={key++}
+        span
+        inherit
+        display="block"
+        className={[classes.paragraph, fadeClass].filter(Boolean).join(" ")}
+      >
         {renderInline(paragraph, key * 1000)}
       </Text>,
     );

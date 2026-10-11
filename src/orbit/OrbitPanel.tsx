@@ -13,6 +13,7 @@ import { ConfirmActionIcon } from "@/orbit/components/ConfirmActionIcon";
 import { CitationsList } from "@/orbit/components/CitationsList";
 import { normalizeQuestion } from "@/orbit/formatQuestion";
 import { RichText, toPlainText } from "@/orbit/components/RichText";
+import { copyRichText } from "@/orbit/richCopy";
 import { DataDigestTable, csvFromDigest, formatDigestAsText, isDataDigest } from "@/orbit/components/DataDigestTable";
 import { pickOrbitSuggestionsForHostname } from "@/orbit/orbitSuggestions";
 import { useTypewriter } from "@/orbit/useTypewriter";
@@ -219,7 +220,7 @@ function TurnActions({
         onAction={async () => {
           const ok = message.imageUrl
             ? await copyImage(message.imageUrl)
-            : await copyText(toPlainText(message.content));
+            : await copyRichText(message.content, toPlainText(message.content));
           return ok ? "Copied" : null;
         }}
       />

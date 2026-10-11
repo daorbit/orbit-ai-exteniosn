@@ -19,14 +19,76 @@
   }
 }
 
+.paragraph {
+  margin: 0 0 0.85em;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.heading.heading {
+  margin: 1.25em 0 0.45em;
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--mantine-color-text);
+}
+
+.heading.heading:first-child {
+  margin-top: 0;
+}
+
+.h1.h1 {
+  font-size: 1.3em;
+}
+
+.h2.h2 {
+  font-size: 1.14em;
+}
+
+.h3.h3 {
+  font-size: 1em;
+}
+
+.list.list {
+  margin: 0.2em 0 0.9em;
+  padding-left: 0.25em;
+}
+
 .list.list,
 .list.list li {
   font-size: inherit;
   line-height: inherit;
 }
 
+.list:last-child {
+  margin-bottom: 0;
+}
+
+.quote {
+  margin: 0.4em 0 0.9em;
+  padding: 0.15em 0 0.15em 0.9em;
+  border-left: 3px solid color-mix(in srgb, var(--mantine-color-brand-5) 55%, transparent);
+  color: var(--mantine-color-dimmed);
+}
+
+.rule.rule {
+  margin: 1.1em 0;
+}
+
+.tableWrap {
+  margin: 0.3em 0 0.9em;
+}
+
 .table.table {
   font-size: 0.95em;
+  border-radius: 8px;
+}
+
+.table.table th {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .codeBlock :global(.hljs) {
