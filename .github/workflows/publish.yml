@@ -1,0 +1,113 @@
+name: Publish to Chrome Web Store
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "manifest.config.ts"
+      - "vite.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".env.production"
+      - ".github/workflows/publish.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: chrome-web-store
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      CWS_API: https://chromewebstore.googleapis.com
+      PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+      ITEM_ID: ${{ secrets.CWS_ITEM_ID }}
+      CAN_PUBLISH: ${{ secrets.CWS_SERVICE_ACCOUNT != '' && secrets.CWS_PUBLISHER_ID != '' && secrets.CWS_ITEM_ID != '' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set release version
+        run: |
+          BASE=$(node -p "require('./package.json').version.split('.').slice(0, 2).join('.')")
+          VERSION="$BASE.$GITHUB_RUN_NUMBER"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Releasing version $VERSION"
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify manifest
+        run: test -f dist/manifest.json
+
+      - name: Package
+        run: cd dist && zip -qr ../orbit-ai.zip .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orbit-ai-${{ env.VERSION }}
+          path: orbit-ai.zip
+
+      - name: Skip publishing
+        if: env.CAN_PUBLISH != 'true'
+        run: echo "Store secrets are not set, so the zip was built but not published."
+
+      - name: Get access token
+        if: env.CAN_PUBLISH == 'true'
+        env:
+          CWS_SERVICE_ACCOUNT: ${{ secrets.CWS_SERVICE_ACCOUNT }}
+        run: |
+          TOKEN=$(node .github/scripts/cws-token.mjs)
+          echo "::add-mask::$TOKEN"
+          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: Upload package
+        if: env.CAN_PUBLISH == 'true'
+        run: |
+          RES=$(curl -sS --fail-with-body -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary @orbit-ai.zip \
+            "$CWS_API/upload/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:upload")
+          echo "$RES"
+          STATE=$(echo "$RES" | jq -r '.uploadState // empty')
+
+          for _ in $(seq 1 30); do
+            case "$STATE" in
+              SUCCEEDED) exit 0 ;;
+              FAILED|NOT_FOUND|"") echo "Upload failed."; exit 1 ;;
+            esac
+            sleep 5
+            RES=$(curl -sS --fail-with-body \
+              -H "Authorization: Bearer $TOKEN" \
+              "$CWS_API/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:fetchStatus")
+            STATE=$(echo "$RES" | jq -r '.lastAsyncUploadState // empty')
+          done
+
+          echo "Upload did not finish in time."
+          echo "$RES"
+          exit 1
+
+      - name: Submit for review
+        if: env.CAN_PUBLISH == 'true'
+        run: |
+          curl -sS --fail-with-body -X POST \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "$CWS_API/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:publish"
