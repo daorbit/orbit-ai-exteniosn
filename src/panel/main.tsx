@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <CodeHighlightAdapterProvider adapter={highlightJsAdapter}>
-        <Notifications position="top-right" />
+        <Notifications position="top-center" limit={3} />
         <App />
       </CodeHighlightAdapterProvider>
     </MantineProvider>

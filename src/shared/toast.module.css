@@ -1,0 +1,41 @@
+.toast.toast {
+  --toast-bg: #18181b;
+  --toast-fg: #fafafa;
+  width: fit-content;
+  max-width: min(440px, calc(100vw - 32px));
+  margin-inline: auto;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--toast-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toast.toast::before {
+  display: none;
+}
+
+:global([data-mantine-color-scheme='dark']) .toast.toast {
+  --toast-bg: #fafafa;
+  --toast-fg: #18181b;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.toast.toast.error,
+:global([data-mantine-color-scheme='dark']) .toast.toast.error {
+  --toast-bg: #dc2626;
+  --toast-fg: #ffffff;
+}
+
+.body.body {
+  margin-inline-end: 0;
+}
+
+.message.message {
+  color: var(--toast-fg);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  text-align: center;
+}

@@ -4,7 +4,7 @@
   height: 100vh;
   box-sizing: border-box;
   overflow-y: auto;
-  background: var(--mantine-color-body);
+  background: var(--bg);
 }
 
 .topBar {
@@ -14,7 +14,7 @@
   height: 52px;
   padding: 0 10px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--mantine-color-default-border);
+  border-bottom: 1px solid var(--border);
 }
 
 .topTitle {
@@ -25,114 +25,150 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 10px;
   width: 100%;
-  max-width: 380px;
+  max-width: 620px;
   margin: 0 auto;
-  padding: 9vh 20px 24px;
+  padding: 12px 12px 24px;
+  box-sizing: border-box;
 }
 
-.head {
+.hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  padding: 32px 22px 30px;
+  border-radius: 1.5rem;
   text-align: center;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
 }
 
-.mark {
-  position: relative;
-  margin-bottom: 6px;
+:root[data-mantine-color-scheme="dark"] .hero {
+  background:
+    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--accent) 24%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 6%, var(--surface-raised)) 0%, var(--surface) 100%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, var(--hairline));
 }
 
-.mark::before {
-  content: "";
-  position: absolute;
-  inset: -14px;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--mantine-color-brand-5) 28%, transparent), transparent 70%);
-  filter: blur(6px);
+.eyebrow {
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--accent);
 }
 
 .title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  margin: 8px 0 0;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  color: var(--fg);
+  text-wrap: balance;
 }
 
-.sub {
-  max-width: 290px;
-  font-size: 13px;
+.lead {
+  max-width: 320px;
+  margin: 10px 0 0;
+  font-size: 15px;
   line-height: 1.5;
-  color: var(--mantine-color-dimmed);
+  color: var(--fg-muted);
+  text-wrap: pretty;
 }
 
-/* How to get a key, as three short numbered steps. */
-.steps {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 0;
-  padding: 14px;
-  list-style: none;
-  border-radius: 12px;
-  border: 1px solid var(--mantine-color-default-border);
-  background: color-mix(in srgb, var(--mantine-color-default) 50%, transparent);
+  gap: 14px;
 }
 
-.steps li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--mantine-color-dimmed);
-}
-
-.steps b {
+.secondary,
+.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 46px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--mantine-color-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 
-.stepNum {
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--mantine-color-brand-5) 16%, transparent);
-  color: var(--mantine-color-brand-5);
-  font-size: 11px;
-  font-weight: 700;
+.secondary {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--fg);
 }
 
-.input {
-  height: 40px;
+.secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-subtle);
 }
 
-.input:focus,
-.input:focus-within {
-  border-color: var(--mantine-color-brand-5);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mantine-color-brand-5) 16%, transparent);
+.primary {
+  margin-top: 4px;
+  border: 0;
+  background: var(--cta);
+  color: var(--cta-fg);
 }
 
-.cta {
-  height: 42px;
+.primary:hover:not(:disabled) {
+  background: var(--cta-hover);
+}
+
+.primary:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.primary[data-loading] {
+  opacity: 1;
+}
+
+.secondary:focus-visible,
+.primary:focus-visible,
+.disconnect:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.disconnect {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mantine-color-red-5);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.disconnect:hover {
+  background: color-mix(in srgb, var(--mantine-color-red-5) 10%, transparent);
 }
 
 .note {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  font-size: 11.5px;
+  margin: 8px 0 0;
+  font-size: 12px;
   line-height: 1.5;
-  color: var(--mantine-color-dimmed);
+  color: var(--fg-faint);
+  text-align: center;
 }
 
 .note svg {
-  flex-shrink: 0;
-  margin-top: 2px;
+  margin-right: 5px;
+  vertical-align: -1px;
 }

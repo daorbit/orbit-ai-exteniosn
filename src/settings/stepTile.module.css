@@ -1,0 +1,44 @@
+.tile {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 20px;
+  border-radius: 1.5rem;
+  background: var(--bg-subtle);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+:root[data-mantine-color-scheme="dark"] .tile {
+  background: var(--surface-raised);
+}
+
+.step {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--accent);
+}
+
+.title {
+  margin: 6px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.body {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}

@@ -14,6 +14,8 @@
   --cta-hover: #333333;
   --cta-fg: #ffffff;
   --hairline: rgba(10, 10, 10, 0.06);
+  --ring: rgba(13, 148, 136, 0.35);
+  --ease-out-q: cubic-bezier(0.16, 1, 0.3, 1);
 
   --surface-2: var(--bg-subtle);
   --text: var(--fg);
@@ -43,6 +45,7 @@
   --cta-hover: #e5e5e5;
   --cta-fg: #0a0a0a;
   --hairline: rgba(255, 255, 255, 0.06);
+  --ring: rgba(20, 184, 166, 0.45);
 
   --mantine-color-body: var(--surface-raised);
   --mantine-color-default-hover: color-mix(in srgb, var(--fg) 8%, var(--surface));
